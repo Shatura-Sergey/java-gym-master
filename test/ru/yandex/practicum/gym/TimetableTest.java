@@ -86,7 +86,7 @@ public class TimetableTest {
                 DayOfWeek.MONDAY, new TimeOfDay(13, 0));
         timetable.addNewTrainingSession(session);
         List<Map.Entry<Coach, Integer>> result = timetable.getCountByCoaches();
-        Assertions.assertEquals("Петров Иван Алексеевич", result.get(0).getKey());
+        Assertions.assertEquals("Петров Иван Алексеевич", result.get(0).getKey().toString());
     }
 
     @Test
