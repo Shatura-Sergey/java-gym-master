@@ -45,7 +45,7 @@ public class Coach {
         return middleName;
     }
 
-    public String toString () {
+    public String toString() {
         return surname + " " + name + " " + middleName;
     }
 }
