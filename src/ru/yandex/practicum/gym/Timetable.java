@@ -1,10 +1,15 @@
 package ru.yandex.practicum.gym;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TreeMap;
+import java.util.Map;
+import java.util.NavigableSet;
+
 
 public class Timetable {
 
-    private final HashMap <DayOfWeek, TreeMap <TimeOfDay, ArrayList<TrainingSession>>> timetable = new HashMap<>();
+    private final HashMap<DayOfWeek, TreeMap<TimeOfDay, ArrayList<TrainingSession>>> timetable = new HashMap<>();
 
     public void addNewTrainingSession(TrainingSession trainingSession) {
         if (timetable.containsKey(trainingSession.getDayOfWeek())) {
@@ -15,11 +20,10 @@ public class Timetable {
                 oldTreeMap.put(trainingSession.getTimeOfDay(), trainingSessions);
                 timetable.put(trainingSession.getDayOfWeek(), oldTreeMap);
             } else {
-                TreeMap<TimeOfDay, ArrayList<TrainingSession>> newTreeMap = new TreeMap<>();
                 ArrayList<TrainingSession> newTrainingSessions = new ArrayList<>();
                 newTrainingSessions.add(trainingSession);
-                newTreeMap.put(trainingSession.getTimeOfDay(), newTrainingSessions);
-                timetable.put(trainingSession.getDayOfWeek(), newTreeMap);
+                oldTreeMap.put(trainingSession.getTimeOfDay(), newTrainingSessions);
+                timetable.put(trainingSession.getDayOfWeek(), oldTreeMap);
             }
         } else {
             TreeMap<TimeOfDay, ArrayList<TrainingSession>> newTreeMap = new TreeMap<>();
@@ -30,11 +34,37 @@ public class Timetable {
         }
     }
 
-    public TreeMap<TimeOfDay, ArrayList<TrainingSession>> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
-        return timetable.get(dayOfWeek); //как реализовать, тоже непонятно, но сложность должна быть О(1)
+    public NavigableSet<TimeOfDay> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
+        if (timetable.containsKey(dayOfWeek)) {
+            return timetable.get(dayOfWeek).navigableKeySet();
+        } else {
+            return new TreeMap<TimeOfDay, ArrayList<TrainingSession>>().navigableKeySet();
+        }
     }
 
     public ArrayList<TrainingSession> getTrainingSessionsForDayAndTime(DayOfWeek dayOfWeek, TimeOfDay timeOfDay) {
-        return timetable.get(dayOfWeek).get(timeOfDay); //как реализовать, тоже непонятно, но сложность должна быть О(1)
+        if (timetable.containsKey(dayOfWeek)) {
+            TreeMap<TimeOfDay, ArrayList<TrainingSession>> treeMap = timetable.get(dayOfWeek);
+            if (treeMap.containsKey(timeOfDay)) {
+                return treeMap.get(timeOfDay);
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public ArrayList<Map.Entry<String, Integer>> getCountByCoaches() {
+        HashMap<String, Integer> coachers = new HashMap<>();
+
+        for (TreeMap<TimeOfDay, ArrayList<TrainingSession>> dayMap : timetable.values()) {
+            for (ArrayList<TrainingSession> sessions : dayMap.values()) {
+                for (TrainingSession session : sessions) {
+                    String coachName = session.getCoach().toString();
+                    coachers.put(coachName, coachers.getOrDefault(coachName, 0) + 1);
+                }
+            }
+        }
+        ArrayList<Map.Entry<String, Integer>> lessons = new ArrayList<>(coachers.entrySet());
+        lessons.sort((lesson1, lesson2) -> lesson2.getValue().compareTo(lesson1.getValue()));
+        return lessons;
     }
 }

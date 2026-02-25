@@ -17,6 +17,9 @@ public class Coach {
         this.middleName = middleName;
     }
 
+    public Coach(String coach1) {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -40,5 +43,9 @@ public class Coach {
 
     public String getMiddleName() {
         return middleName;
+    }
+
+    public String toString () {
+        return surname + " " + name + " " + middleName;
     }
 }
